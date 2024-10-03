@@ -1,18 +1,13 @@
 import socketio
-from draw_utils import draw_status
+from turn_manager import update_game_state_for_new_turn
+from game_state import game_state
+import config
 
 sio = socketio.Client()
 
 
-def setup_network_deps(deps):
-    global external_deps
-    global server_url
-    external_deps = deps
-    server_url = deps["server_url"]
-
-
 def on_connect():
-    stdscr = external_deps["shared_state"].get("stdscr")
+    stdscr = game_state.shared_state.get("stdscr")
     if stdscr:
         stdscr.move(0, 0)
         stdscr.clrtoeol()
@@ -21,7 +16,7 @@ def on_connect():
 
 
 def on_disconnect():
-    stdscr = external_deps["shared_state"].get("stdscr")
+    stdscr = game_state.shared_state.get("stdscr")
     if stdscr:
         stdscr.move(0, 0)
         stdscr.clrtoeol()
@@ -30,17 +25,14 @@ def on_disconnect():
 
 
 def on_data(data):
-    print("map_update_received")
-    external_deps["input_allowed"].set()
-    print("input enabled")
-    draw_status(line1="Turn Starts now", line2="Let's Go!")
+    update_game_state_for_new_turn(data)
 
 
 def connect_to_server():
     try:
-        sio.connect(server_url)
+        sio.connect(config.server_url)
     except socketio.exceptions.ConnectionError as e:
-        stdscr = external_deps["shared_state"].get("stdscr")
+        stdscr = game_state.shared_state.get("stdscr")
         if stdscr:
             stdscr.addstr(1, 0, f"Connection error: {e}")
             stdscr.refresh()

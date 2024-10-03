@@ -1,11 +1,11 @@
-# tile.py
-
-
 class Tile:
     def __init__(
-        self, icon, tile_type, x, y, building=None, key=None, owners=None, height=1
+        self, icons, tile_type, x, y, building=None, key=None, owners=None, height=1
     ):
-        self.icon = icon
+        # Ensure icons is a list with the correct length
+        if len(icons) != 2:
+            raise ValueError("Icons array must have exactly two elements.")
+        self.icons = icons
         self.tile_type = tile_type
         self.x = x
         self.y = y
@@ -26,11 +26,11 @@ class Tile:
 
     def update_building(self, building_icon, building_name):
         self.building = building_name
-        self.icon = building_icon
+        self.icons[0] = building_icon
 
     def to_dict(self):
         return {
-            "icon": self.icon,
+            "icons": self.icons,
             "tile_type": self.tile_type,
             "x": self.x,
             "y": self.y,
@@ -42,7 +42,7 @@ class Tile:
 
     def copy(self):
         return Tile(
-            self.icon,
+            self.icons[:],
             self.tile_type,
             self.x,
             self.y,
@@ -55,7 +55,7 @@ class Tile:
     @classmethod
     def from_dict(cls, data):
         return cls(
-            icon=data["icon"],
+            icons=data["icons"],
             tile_type=data["tile_type"],
             x=data["x"],
             y=data["y"],
@@ -66,4 +66,4 @@ class Tile:
         )
 
     def __str__(self):
-        return self.icon
+        return "".join(self.icons)

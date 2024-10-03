@@ -26,10 +26,11 @@ class Command:
             )
             self.draw_tile(self.tile, self.tile.x, self.tile.y, self.shared_state)
 
-    def undo(self, map_data):
+    def undo(self, map_data, player):
         if self.action == "build" and self.prev_state:
             map_data[self.tile.y][self.tile.x] = self.prev_state
             self.draw_tile(self.prev_state, self.tile.x, self.tile.y, self.shared_state)
+            player.add_actions(1)
 
     def to_dict(self):
         return {
